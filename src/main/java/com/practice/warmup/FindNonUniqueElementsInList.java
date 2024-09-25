@@ -1,40 +1,15 @@
 package com.practice.warmup;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class FindNonUniqueElementsInList {
 
     /**
-     * Generic method that takes a list of integers and returns a set of integers that appear
+     * Implement generic method that takes a list of any object and returns a set of them that appear
      * more than once (non-unique elements).
-     *
-     * @param inputList list of integers, which may contain both unique and duplicate values.
-     * @return set of non-unique elements.
      */
-    public <T> Set<T> findNonUniqueElements(List<T> inputList) {
-        Set<T> elements = new HashSet<>();
-        Set<T> duplicates = new HashSet<>();
-
-        for (T element : inputList) {
-            if (!elements.add(element)) {
-                duplicates.add(element);
-            }
-        }
-
-        return duplicates;
-    }
-
-    /**
-     * Rewrote generic method using Stream API.
-     *
-     * @param inputList list of integers, which may contain both unique and duplicate values.
-     * @return set of non-unique elements.
-     */
-    public <T> Set<T> findNonUniqueElementsUsingStream(List<T> inputList) {
-        Set<T> elements = new HashSet<>();
-        return inputList.stream().filter(n -> !elements.add(n)).collect(Collectors.toSet());
+    public Set findNonUniqueElements(List inputList) {
+        throw new RuntimeException("Not Implemented");
     }
 }
