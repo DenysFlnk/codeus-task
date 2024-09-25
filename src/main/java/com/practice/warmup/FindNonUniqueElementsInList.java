@@ -8,6 +8,8 @@ public class FindNonUniqueElementsInList {
     /**
      * Implement generic method that takes a list of any object and returns a set of them that appear
      * more than once (non-unique elements).
+     *
+     * Validate your impplementation using existing unit tests.
      */
     public Set findNonUniqueElements(List inputList) {
         throw new RuntimeException("Not Implemented");
