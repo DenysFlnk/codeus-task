@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 public class FindNonUniqueElementsInList {
 
     /**
-     * Method that takes a list of integers and returns a set of integers that appear
+     * Generic method that takes a list of integers and returns a set of integers that appear
      * more than once (non-unique elements).
      *
      * @param inputList list of integers, which may contain both unique and duplicate values.
@@ -27,6 +27,12 @@ public class FindNonUniqueElementsInList {
         return duplicates;
     }
 
+    /**
+     * Rewrote generic method using Stream API.
+     *
+     * @param inputList list of integers, which may contain both unique and duplicate values.
+     * @return set of non-unique elements.
+     */
     public <T> Set<T> findNonUniqueElementsUsingStream(List<T> inputList) {
         Set<T> elements = new HashSet<>();
         return inputList.stream().filter(n -> !elements.add(n)).collect(Collectors.toSet());
