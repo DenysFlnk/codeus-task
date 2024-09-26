@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -41,6 +42,22 @@ public class CompletableFutureTests {
     private CompletableFutureTasks completableFutureTasks;
 
     private final URI USERS_URI = URI.create("https://reqres.in/api/users/1");
+
+    @Test
+    public void testDoubleNumberAsync() throws Exception {
+        CompletableFuture<Integer> resultFuture = completableFutureTasks.executeDoublingNumberAsync(10);
+        Integer result = resultFuture.get();
+        assertNotNull(result);
+        assertEquals(20, (int) result);
+    }
+
+    @Test
+    public void testToUpperCaseAsync() throws Exception {
+        CompletableFuture<String> resultFuture = completableFutureTasks.executeAsyncConversionToUpperCase("hello");
+        String result = resultFuture.get();
+        assertNotNull(result);
+        assertEquals("HELLO", result);
+    }
 
     @Test
     public void testExecutesSyncGetRequest() throws Exception {
