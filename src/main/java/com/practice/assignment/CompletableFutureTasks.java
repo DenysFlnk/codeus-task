@@ -30,8 +30,7 @@ public class CompletableFutureTasks {
      * @return completableFuture with doubling result.
      */
     public CompletableFuture<Integer> executeDoublingNumberAsync(Integer number) {
-        return CompletableFuture.supplyAsync(() -> number)
-                .thenApply(num -> num * 2);
+        throw new RuntimeException("Not Implemented");
     }
 
     /**
@@ -41,8 +40,7 @@ public class CompletableFutureTasks {
      * @return CompletableFuture with async conversion
      */
     public CompletableFuture<String> executeAsyncConversionToUpperCase(String input) {
-        return CompletableFuture.supplyAsync(() -> input)
-                .thenApply(String::toUpperCase);
+        throw new RuntimeException("Not Implemented");
     }
 
     /**
