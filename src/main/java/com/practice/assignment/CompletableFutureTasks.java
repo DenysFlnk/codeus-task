@@ -24,6 +24,28 @@ public class CompletableFutureTasks {
     }
 
     /**
+     * Implement a method that takes an integer input and returns a CompletableFuture which will asynchronously
+     * compute and return the double of that input number.
+     *
+     * @return completableFuture with doubling result.
+     */
+    public CompletableFuture<Integer> executeDoublingNumberAsync(Integer number) {
+        return CompletableFuture.supplyAsync(() -> number)
+                .thenApply(num -> num * 2);
+    }
+
+    /**
+     * Create a method that receives a string and transforms it to uppercase asynchronously using CompletableFuture API.
+     *
+     * @param input string for conversion
+     * @return CompletableFuture with async conversion
+     */
+    public CompletableFuture<String> executeAsyncConversionToUpperCase(String input) {
+        return CompletableFuture.supplyAsync(() -> input)
+                .thenApply(String::toUpperCase);
+    }
+
+    /**
      * Implement a method that sends a synchronous HTTP GET request using Java's HttpClient API to a specified URI and
      * returns a User object based on the response received from the server.
      * Map the response body (assumed to be JSON) to a User object using the CustomMapperUtils.mapToUser(String json) method.
