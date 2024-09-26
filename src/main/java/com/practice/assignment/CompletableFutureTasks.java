@@ -32,12 +32,7 @@ public class CompletableFutureTasks {
      * @return User object based on the server's response.
      */
     public User executesSyncGetRequest(URI uri) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(uri)
-                .build();
-
-        HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
-        return mapToUser(response.body());
+        throw new RuntimeException("Not Implemented");
     }
 
     /**
@@ -54,19 +49,7 @@ public class CompletableFutureTasks {
      * @return User object based on the server's response.
      */
     public User executeAsyncGetRequest(URI uri) {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(uri)
-                .build();
-
-        CompletableFuture<User> response = httpClient.sendAsync(request, BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenApply(CustomMapperUtils::mapToUser)
-                .exceptionally(ex -> {
-                    System.out.println("Exception: " + ex.getMessage());
-                    return null;
-                });
-
-        return response.join();
+        throw new RuntimeException("Not Implemented");
     }
 
     /**
@@ -83,22 +66,7 @@ public class CompletableFutureTasks {
      * @return a list of User objects based on the server responses for each URI. If an error occurs for any request, null will be returned for that specific request.
      */
     public List<User> executeMultipleAsyncGetRequests(List<URI> uriList) {
-        List<HttpRequest> requests = uriList.stream()
-                .map(HttpRequest::newBuilder)
-                .map(HttpRequest.Builder::build)
-                .toList();
-
-        List<CompletableFuture<User>> completableFutures = requests.stream()
-                .map(req -> httpClient.sendAsync(req, HttpResponse.BodyHandlers.ofString())
-                        .thenApply(HttpResponse::body)
-                        .thenApply(CustomMapperUtils::mapToUser)
-                        .exceptionally(ex -> {
-                            System.out.println("Exception: " + ex.getMessage());
-                            return null;
-                        }))
-                .toList();
-
-        return completableFutures.stream().map(CompletableFuture::join).toList();
+        throw new RuntimeException("Not Implemented");
     }
 
     /**
@@ -114,21 +82,6 @@ public class CompletableFutureTasks {
      * @return a list of User objects based on the server responses for each URI. The method ensures all requests complete before returning the results.
      */
     public List<User> executeMultipleAsyncGetRequestsWithAllOf(List<URI> uriList) {
-        List<HttpRequest> requests = uriList.stream()
-                .map(HttpRequest::newBuilder)
-                .map(HttpRequest.Builder::build)
-                .toList();
-
-        List<User> users = new ArrayList<>();
-
-        CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(requests.stream()
-                .map(request -> httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                        .thenApply(HttpResponse::body)
-                        .thenApply(CustomMapperUtils::mapToUser)
-                        .thenAccept(users::add)
-                ).toArray(CompletableFuture[]::new));
-        combinedFuture.join();
-
-        return users;
+        throw new RuntimeException("Not Implemented");
     }
 }
