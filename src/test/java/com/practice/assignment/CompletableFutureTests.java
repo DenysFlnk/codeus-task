@@ -11,14 +11,17 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -65,7 +68,7 @@ public class CompletableFutureTests {
     }
 
     @Test
-    public void testExecuteAsyncGetRequest() throws Exception {
+    public void testExecuteAsyncGetRequest() {
         String mockResponseBody = "{\"data\":{\"id\":2,\"email\":\"janet.weaver@reqres.in\",\"first_name\":\"Janet\"," +
                 "\"last_name\":\"Weaver\",\"avatar\":\"https://reqres.in/img/faces/2-image.jpg\"}}";
 
@@ -93,7 +96,26 @@ public class CompletableFutureTests {
     }
 
     @Test
-    public void testExecuteMultipleAsyncGetRequests() throws Exception {
+    public void testExecuteAsyncGetRequestHandlesException() throws Exception {
+        when(mockHttpClient.sendAsync(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(CompletableFuture.failedFuture(new RuntimeException("Test exception")));
+        URI testUri = new URI("https://reqres.in/api/users/2");
+        User result = completableFutureTasks.executeAsyncGetRequest(testUri);
+        assertNull("You didn't handle the exception correctly", result);
+        verify(mockHttpClient, times(1)).sendAsync(any(HttpRequest.class), any(HttpResponse.BodyHandler.class));
+    }
+
+    @Test
+    public void testExecuteMultipleAsyncGetRequests() throws URISyntaxException {
+        testExecuteMultipleAsyncGetRequestsUtil((uris) -> completableFutureTasks.executeMultipleAsyncGetRequests(uris));
+    }
+
+    @Test
+    public void testExecuteMultipleAsyncGetRequestsWithAllOf() throws URISyntaxException {
+        testExecuteMultipleAsyncGetRequestsUtil((uris) -> completableFutureTasks.executeMultipleAsyncGetRequestsWithAllOf(uris));
+    }
+
+    private void testExecuteMultipleAsyncGetRequestsUtil(Function<List<URI>, List<User>> function) throws URISyntaxException {
         URI uri1 = new URI("https://reqres.in/api/users/2");
         URI uri2 = new URI("https://reqres.in/api/users/3");
         List<URI> uriList = List.of(uri1, uri2);
@@ -103,19 +125,8 @@ public class CompletableFutureTests {
         when(mockResponse1.body()).thenReturn("{\"id\": 2, \"first_name\": \"Janet\", \"last_name\": \"Weaver\", \"email\": \"janet.weaver@reqres.in\"}");
         when(mockResponse2.body()).thenReturn("{\"id\": 3, \"first_name\": \"Emma\", \"last_name\": \"Wong\", \"email\": \"emma.wong@reqres.in\"}");
 
-        CompletableFuture<HttpResponse<String>> future1 = CompletableFuture.supplyAsync(() -> {
-            // Simulate delay for async operation
-            System.out.println("2001");
-            sleep(200);
-            return mockResponse1;
-        });
-        //future1.join();
-        CompletableFuture<HttpResponse<String>> future2 = CompletableFuture.supplyAsync(() -> {
-            System.out.println("2002");
-            sleep(200);
-            return mockResponse2;
-        });
-        //future2.join();
+        CompletableFuture<HttpResponse<String>> future1 = CompletableFuture.completedFuture(mockResponse1);
+        CompletableFuture<HttpResponse<String>> future2 = CompletableFuture.completedFuture(mockResponse2);
 
         when(mockHttpClient.sendAsync(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
                 .thenReturn(future1)
@@ -130,15 +141,7 @@ public class CompletableFutureTests {
             mockedStatic.when(() -> CustomMapperUtils.mapToUser(mockResponse2.body()))
                     .thenReturn(mockUser2);
 
-            // Measure time to verify asynchronous execution
-            long startTime = System.currentTimeMillis();
-            List<User> users = completableFutureTasks.executeMultipleAsyncGetRequests(uriList);
-            long endTime = System.currentTimeMillis();
-
-            // Verify that the execution time is less than the sum of both delays, meaning they ran concurrently
-            long executionTime = endTime - startTime;
-            System.out.println(executionTime);
-            //assertTrue("Execution should be asynchronous", executionTime < 400);
+            List<User> users = function.apply(uriList);
 
             // Verify that the results are correct
             assertNotNull(users);
@@ -155,28 +158,4 @@ public class CompletableFutureTests {
             mockedStatic.verify(() -> CustomMapperUtils.mapToUser(mockResponse2.body()), times(1));
         }
     }
-
-    // Helper method to simulate delay
-    private void sleep(int millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-//    @Test
-//    public void test() throws ExecutionException, InterruptedException {
-//        CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() -> {
-//            throw new RuntimeException();
-//        });
-//        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-//        when(client.executeAsyncGetRequest(captor.capture())).thenReturn(completableFuture);
-//        var result = completableFutureTasks.executeAsyncGetRequest2();
-//        User user = result.get();
-//        Assert.assertEquals(0, user.id());
-//        Assert.assertEquals("", user.email());
-//        System.out.println("URL: " + captor.getValue());
-//        Assert.assertEquals("url", captor.getValue());
-//    }
 }

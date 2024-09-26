@@ -3,6 +3,7 @@ package com.practice.assignment;
 import com.practice.assignment.model.CustomMapperUtils;
 import com.practice.assignment.model.User;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -27,10 +28,10 @@ public class CompletableFutureTasks {
      * returns a User object based on the response received from the server.
      * Map the response body (assumed to be JSON) to a User object using the CustomMapperUtils.mapToUser(String json) method.
      *
-     * @param uri input uri of resource. For example, you can use this for manual testing: https://reqres.in/api/users/1.
+     * @param uri input uri of resource. For example, you can use this resource for manual testing: https://reqres.in/api/users/1.
      * @return User object based on the server's response.
      */
-    public User executesSyncGetRequest(URI uri) throws Exception {
+    public User executesSyncGetRequest(URI uri) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .build();
