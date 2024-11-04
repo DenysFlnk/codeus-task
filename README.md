@@ -1,3 +1,26 @@
+# Practice with CompletableFuture API
+
+> Please set up the timer and start doing the following tasks !!!
+> 
+> Solution is available in `completed` branch
+
+**Warmup [15 min]**: Find non-unique elements in a list
+
+1. Clone a project https://github.com/TheJKGL/codeus-practice/tree/develop
+2. Switch to `develop` branch and navigate to `src/main/java/com/practice/warmup/FindNonUniqueElementsInList.java`
+3. Validate your solution using Unit Tests in `src/test/java/com/practice/warmup/FindNonUniqueElementsTest.java`
+
+Optionally:
+
+- Solve the task using Java Stream API
+- Solve the task using  any other programming language
+
+**Assignment [40 min]**: Practice with CompletableFuture API and HttpClient API
+
+1. Read the short presentation below to dive into the context of the task
+2. Stay in `develop` branch and navigate to `src/main/java/com/practice/assignment` package and implement all methods in `CompletableFutureTasks` class
+3. Validate your solution using Unit Tests in `src/test/java/com/practice/assignment/CompletableFutureTests.java`
+
 ### Short Presentation for CompletableFuture and HttpClient
 
 ### Introduction
