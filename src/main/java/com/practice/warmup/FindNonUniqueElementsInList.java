@@ -1,5 +1,6 @@
 package com.practice.warmup;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -12,6 +13,18 @@ public class FindNonUniqueElementsInList {
      * Validate your impplementation using existing unit tests.
      */
     public Set findNonUniqueElements(List inputList) {
-        throw new RuntimeException("Not Implemented");
+        Set uniqueElements = new HashSet();
+        Set duplicates = new HashSet();
+
+        inputList.stream()
+            .forEach(e -> {
+                if (uniqueElements.contains(e)) {
+                    duplicates.add(e);
+                } else {
+                    uniqueElements.add(e);
+                }
+            });
+
+        return duplicates;
     }
 }
