@@ -24,84 +24,157 @@ public class CompletableFutureTasks {
     }
 
     /**
-     * Implement a method that takes an integer input and returns a CompletableFuture which will asynchronously
-     * compute and return the double of that input number.
+     * Implement a method that takes an integer input and returns a CompletableFuture which will asynchronously compute
+     * and return the double of that input number.
      *
      * @return completableFuture with doubling result.
      */
     public CompletableFuture<Integer> executeDoublingNumberAsync(Integer number) {
-        throw new RuntimeException("Not Implemented");
+        return CompletableFuture.supplyAsync(() -> number * 2);
     }
 
     /**
-     * Create a method that receives a string and transforms it to uppercase asynchronously using CompletableFuture API.
+     * Create a method that receives a string and transforms it to uppercase asynchronously using CompletableFuture
+     * API.
      *
      * @param input string for conversion
      * @return CompletableFuture with async conversion
      */
     public CompletableFuture<String> executeAsyncConversionToUpperCase(String input) {
-        throw new RuntimeException("Not Implemented");
+        return CompletableFuture.supplyAsync(input::toUpperCase);
     }
 
     /**
      * Implement a method that sends a synchronous HTTP GET request using Java's HttpClient API to a specified URI and
-     * returns a User object based on the response received from the server.
-     * Map the response body (assumed to be JSON) to a User object using the CustomMapperUtils.mapToUser(String json) method.
+     * returns a User object based on the response received from the server. Map the response body (assumed to be JSON)
+     * to a User object using the CustomMapperUtils.mapToUser(String json) method.
      *
-     * @param uri input uri of resource. For example, you can use this resource for manual testing: https://reqres.in/api/users/1.
+     * @param uri input uri of resource. For example, you can use this resource for manual testing:
+     * https://reqres.in/api/users/1.
      * @return User object based on the server's response.
      */
     public User executesSyncGetRequest(URI uri) throws IOException, InterruptedException {
-        throw new RuntimeException("Not Implemented");
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(uri)
+            .GET()
+            .build();
+
+        HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
+        return mapToUser(response.body());
     }
 
     /**
-     * Implement a method that sends an asynchronous HTTP GET request using Java's HttpClient API and CompletableFuture API.
-     * After sending the request, the method should process the response asynchronously in 4 steps:
-     * - 1: it should extract the response body (think which method of CompletableFuture can help you with this),
-     * - 2: map this body to a User object using a utility function CustomMapperUtils::mapToUser.
-     * - 3: if an exception occurs during the asynchronous operation, the method should handle it
-     *      by printing the exception message and returning null. (Also think which method of CompletableFuture can help you with this)
-     * - 4: the final result of the asynchronous operation should be obtained using CompletableFuture method,
-     *      which blocks until the operation completes and returns the User object.
+     * Implement a method that sends an asynchronous HTTP GET request using Java's HttpClient API and CompletableFuture
+     * API. After sending the request, the method should process the response asynchronously in 4 steps: - 1: it should
+     * extract the response body (think which method of CompletableFuture can help you with this), - 2: map this body to
+     * a User object using a utility function CustomMapperUtils::mapToUser. - 3: if an exception occurs during the
+     * asynchronous operation, the method should handle it by printing the exception message and returning null. (Also
+     * think which method of CompletableFuture can help you with this) - 4: the final result of the asynchronous
+     * operation should be obtained using CompletableFuture method, which blocks until the operation completes and
+     * returns the User object.
      *
-     * @param uri input uri of resource. For example, you can use this for manual testing: https://reqres.in/api/users/2.
+     * @param uri input uri of resource. For example, you can use this for manual testing:
+     * https://reqres.in/api/users/2.
      * @return User object based on the server's response.
      */
     public User executeAsyncGetRequest(URI uri) {
-        throw new RuntimeException("Not Implemented");
+        HttpRequest request = HttpRequest.newBuilder()
+            .uri(uri)
+            .GET()
+            .build();
+
+        return httpClient.sendAsync(request, BodyHandlers.ofString())
+            .thenApply(HttpResponse::body)
+            .thenApply(CustomMapperUtils::mapToUser)
+            .exceptionallyAsync(e -> {
+                System.out.println(e.getMessage());
+                return null;
+            })
+            .join();
+
     }
 
     /**
-     * Implement a method that performs multiple asynchronous HTTP GET requests using Java's HttpClient API and CompletableFuture API.
-     * The method should accept a list of URIs, build corresponding HttpRequest objects for each,
-     * and execute the following steps asynchronously for each request:
-     * - 1: Send the HTTP request using HttpClient's sendAsync method and handle the response body.
-     * - 2: Extract the response body from each HttpResponse.
-     * - 3: Map the extracted response body to a User object using a utility function CustomMapperUtils::mapToUser.
-     * - 4: If an exception occurs during the asynchronous execution of any request, handle it by printing the exception message and returning null.
-     * - 5: Collect all CompletableFutures into List and call CompletableFuture::join for each until all tasks complete, return a list of User objects.
+     * Implement a method that performs multiple asynchronous HTTP GET requests using Java's HttpClient API and
+     * CompletableFuture API. The method should accept a list of URIs, build corresponding HttpRequest objects for each,
+     * and execute the following steps asynchronously for each request: - 1: Send the HTTP request using HttpClient's
+     * sendAsync method and handle the response body. - 2: Extract the response body from each HttpResponse. - 3: Map
+     * the extracted response body to a User object using a utility function CustomMapperUtils::mapToUser. - 4: If an
+     * exception occurs during the asynchronous execution of any request, handle it by printing the exception message
+     * and returning null. - 5: Collect all CompletableFutures into List and call CompletableFuture::join for each until
+     * all tasks complete, return a list of User objects.
      *
-     * @param uriList a list of URIs from which to fetch user data. Each URI will be used for an individual asynchronous request.
-     * @return a list of User objects based on the server responses for each URI. If an error occurs for any request, null will be returned for that specific request.
+     * @param uriList a list of URIs from which to fetch user data. Each URI will be used for an individual asynchronous
+     * request.
+     * @return a list of User objects based on the server responses for each URI. If an error occurs for any request,
+     * null will be returned for that specific request.
      */
     public List<User> executeMultipleAsyncGetRequests(List<URI> uriList) {
-        throw new RuntimeException("Not Implemented");
+        List<CompletableFuture<User>> futures = new ArrayList<>();
+
+        for (URI uri : uriList) {
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
+
+            CompletableFuture<User> future = httpClient.sendAsync(request, BodyHandlers.ofString())
+                .thenApply(HttpResponse::body)
+                .thenApply(CustomMapperUtils::mapToUser)
+                .exceptionallyAsync(e -> {
+                    System.out.println(e.getMessage());
+                    return null;
+                });
+
+            futures.add(future);
+
+        }
+
+        return futures.stream()
+            .map(CompletableFuture::join)
+            .toList();
     }
 
     /**
-     * Implement a method that performs multiple asynchronous HTTP GET requests using Java's HttpClient API and CompletableFuture API,
-     * similar to the previous method, but with a key difference: this method should use `CompletableFuture.allOf()` to combine multiple asynchronous tasks.
+     * Implement a method that performs multiple asynchronous HTTP GET requests using Java's HttpClient API and
+     * CompletableFuture API, similar to the previous method, but with a key difference: this method should use
+     * `CompletableFuture.allOf()` to combine multiple asynchronous tasks.
      *
-     * Differences from the previous method:
-     * - Instead of handling each CompletableFuture independently and joining them individually,
-     *   this method combines all the CompletableFutures into one using `CompletableFuture.allOf()`.
-     * - The method uses `thenAccept(users::add)` to accumulate each User object into a shared `List<User>`, which is updated as each request completes.
+     * Differences from the previous method: - Instead of handling each CompletableFuture independently and joining them
+     * individually, this method combines all the CompletableFutures into one using `CompletableFuture.allOf()`. - The
+     * method uses `thenAccept(users::add)` to accumulate each User object into a shared `List<User>`, which is updated
+     * as each request completes.
      *
-     * @param uriList a list of URIs from which to fetch user data. Each URI will be used for an individual asynchronous request.
-     * @return a list of User objects based on the server responses for each URI. The method ensures all requests complete before returning the results.
+     * @param uriList a list of URIs from which to fetch user data. Each URI will be used for an individual asynchronous
+     * request.
+     * @return a list of User objects based on the server responses for each URI. The method ensures all requests
+     * complete before returning the results.
      */
     public List<User> executeMultipleAsyncGetRequestsWithAllOf(List<URI> uriList) {
-        throw new RuntimeException("Not Implemented");
+        List<CompletableFuture<User>> futures = new ArrayList<>();
+        List<User> users = new ArrayList<>();
+
+        for (URI uri : uriList) {
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
+
+            CompletableFuture<User> future = httpClient.sendAsync(request, BodyHandlers.ofString())
+                .thenApply(HttpResponse::body)
+                .thenApply(CustomMapperUtils::mapToUser)
+                .exceptionallyAsync(e -> {
+                    System.out.println(e.getMessage());
+                    return null;
+                });
+
+            futures.add(future);
+        }
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        return futures.stream()
+            .map(CompletableFuture::join)
+            .toList();
     }
 }
